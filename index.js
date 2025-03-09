@@ -1,17 +1,25 @@
-#!/usr/bin/env node
+// Express application
+import express from 'express';
+let count = 1;
 
+
+// configuration
 const
-  port = (process.argv[2] || process.env.PORT || 3000),
-  http = require('http');
+  cfg = {
+    port: process.env.PORT || 3000
+  };
 
-http.createServer((req, res) => {
+// Express initiation
+const app = express();
 
-  console.log(req.url);
+// home page route
+app.get('/', (req, res) => {
+    count++;
+  res.send('Hello World!');
+});
 
-  res.statusCode = 200;
-  res.setHeader('Content-Type', 'text/html');
-  res.end(`<p>Hello World!</p>`);
+// start server
+app.listen(cfg.port, () => {
+  console.log(`Example app listening at http://localhost:${ cfg.port } with ${count}`);
+});
 
-}).listen(port);
-
-console.log(`Server running at http://localhost:${ port }/`);

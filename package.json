@@ -1,0 +1,13 @@
+{
+  "name": "test2",
+  "version": "1.0.0",
+  "description": "My Standard app",
+  "main": "index.js",
+  "type":"module",
+   "scripts": {
+    "start": "nodemon index.js"
+  },
+  
+  "author": "Believe",
+  "license": "ISC"
+}
