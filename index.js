@@ -6,7 +6,7 @@ let count = 1;
 // configuration
 const
   cfg = {
-    port: process.env.PORT || 3000
+    port: process.env.PORT || 3100
   };
 
 // Express initiation
@@ -15,11 +15,11 @@ const app = express();
 // home page route
 app.get('/', (req, res) => {
     count++;
-  res.send('Hello World!');
+  res.send('Hello World there!');
 });
 
 // start server
 app.listen(cfg.port, () => {
-  console.log(`Example app listening at http://localhost:${ cfg.port } with ${count}`);
+  console.log(`Example app listening at http://localhost:${ cfg.port } with ${count} .`);
 });
 
