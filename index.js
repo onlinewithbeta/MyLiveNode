@@ -1,6 +1,5 @@
 // Express application
 import express from 'express';
-let count = 1;
 
 
 // configuration
@@ -14,12 +13,20 @@ const app = express();
 
 // home page route
 app.get('/', (req, res) => {
-    count++;
-  res.send('Hello World there!');
+     console.log(req.url);
+
+  res.statusCode = 200;
+  res.setHeader('Content-Type', 'text/html');
+  res.send(`<h1>Hello World!</h1>`);
+  
 });
+
+// serve static assets
+app.use(express.static( 'static' ));
 
 // start server
 app.listen(cfg.port, () => {
-  console.log(`Example app listening at http://localhost:${ cfg.port } with ${count} .`);
+  console.log(`Example app listening at http://localhost:${ cfg.port }.`);
 });
+
 

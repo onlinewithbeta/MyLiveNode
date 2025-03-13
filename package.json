@@ -7,7 +7,6 @@
     "scripts": {
         "start": "nodemon index.js"
     },
-
     "author": "Believe",
     "license": "ISC",
     "dependencies": {
