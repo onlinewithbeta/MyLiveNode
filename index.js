@@ -1,35 +1,22 @@
 // Express application
 import express from 'express';
+import {cfg} from './confg.js';
 
 
-// configuration
-const
-cfg = {
-    port: process.env.PORT || 3100
-};
-let count = 1;
+
+
+
 // Express initiation
 const app = express();
+app.use(express.json());
 
 // home page route
-app.get('/', (req, res) => {
-    console.log(req.url);
-
-    res.statusCode = 200;
-    res.setHeader('Content-Type', 'text/html');
-
-
-    count++;
-    console.log(count);
-
-    res.send(`${count}<h1>Hello World!</h1>`);
-
+app.post('/', (req, res) => {
+    console.log(req.body);
+    res.send(req.body);
 });
-
-// serve static assets
-app.use(express.static('static'));
 
 // start server
 app.listen(cfg.port, () => {
-    console.log(`Example app listening at http://localhost:${ cfg.port }.`);
+    console.log(`Our app is listening on http://localhost:${ cfg.port }`);
 });
