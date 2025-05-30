@@ -63,7 +63,9 @@ app.use(express.json());
 // home page route
 app.post('/', (req, res) => {
     console.log(req.body);
-    res.send(req.body);
+    let sss = req.body;
+    sss.reply = "Hrloo";
+    res.send(sss);
 });
 
 
