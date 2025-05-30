@@ -1,5 +1,5 @@
 
 export const cfg = {
     port: process.env.PORT || 3100,
-    key: process.env.key
+    DB_URL: process.env.DB_URL
 };
