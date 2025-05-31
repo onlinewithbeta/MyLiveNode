@@ -72,12 +72,13 @@ app.post('/', (req, res) => {
 //Increase tokens
 async function increaseTokens(gmail, amount, notes) {
     try {
-        const user = await PermiumUser.findOne({ gmail: gmail });
+        let user = await PermiumUser.findOne({ gmail: gmail });
         if (!user) throw new Error(`User ${gmail} not found`);
         
         if ((user.tokens + amount) < 0) {
             throw new Error(`Insufficient tokens. Current balance: ${user.tokens}`);
         }
+                amount = amount/1000;
 
         const trans = {
             action: notes,
@@ -90,7 +91,8 @@ async function increaseTokens(gmail, amount, notes) {
         // Initialize details if not exists
         if (!user.details) user.details = { Transactions: [] };
         if (!user.details.Transactions) user.details.Transactions = [];
-
+        
+        
         user.tokens += amount;
         user.details.Transactions.push(trans);
         user.markModified('details'); // Important for mixed types
@@ -122,7 +124,8 @@ app.post('/Buying',async (req, res) => {
        
      }
    }catch(err){
-    res.send(err.message);
+    console.log(`We noticed ${err.message}`);
+    res.send(`We noticed ${err.message}`);
    }
 });
 
