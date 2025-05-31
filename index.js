@@ -115,6 +115,9 @@ app.post('/Buying',async (req, res) => {
     
     res.send(user);
      }else{
+       console.log('Failure');
+       console.log(req.body);
+       
     res.send("Allgood");
        
      }
