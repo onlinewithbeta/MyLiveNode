@@ -115,7 +115,7 @@ app.post('/Buying',async (req, res) => {
     
     res.send(user);
      }else{
-    res.send(200);
+    res.send("Allgood");
        
      }
    }catch(err){
