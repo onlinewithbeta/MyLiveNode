@@ -64,7 +64,7 @@ app.use(express.json());
 app.post('/', (req, res) => {
     console.log(req.body);
     let sss = req.body;
-    sss.reply = "Hrloo";
+    sss.reply = "I am ok";
     res.send(sss);
 });
 
@@ -104,18 +104,20 @@ async function increaseTokens(gmail, amount, notes) {
 }
 
 
-app.post('/Buying/wh',async (req, res) => {
-  res.send(200);
-  console.log("rewjsj");
-});
-
 app.post('/Buying',async (req, res) => {
    try{
-    const {gmail,amount} = req.body;
-    
-  let user =  await increaseTokens(gmail, amount, `Bought Tokens`);
+     let payMent = req.body;
+     if(payMent.event === 'charge.sucess'){
+       const gmail = payMent.data.customer.email;
+       const amount = payMent.data.amount;
+     
+     let user =  await increaseTokens(gmail, amount, `Bought Tokens`);
     
     res.send(user);
+     }else{
+    res.send(200);
+       
+     }
    }catch(err){
     res.send(err.message);
    }
