@@ -107,7 +107,7 @@ async function increaseTokens(gmail, amount, notes) {
 app.post('/Buying',async (req, res) => {
    try{
      let payMent = req.body;
-     if(payMent.event === 'charge.sucess'){
+     if(payMent.event === 'charge.success'){
        const gmail = payMent.data.customer.email;
        const amount = payMent.data.amount;
      
