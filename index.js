@@ -107,6 +107,9 @@ async function increaseTokens(gmail, amount, notes) {
 
 
 app.post('/Buying',async (req, res) => {
+    
+    console.log(req.body);
+    
    try{
      let payMent = req.body;
      if(payMent.event === 'charge.success'){
@@ -114,19 +117,23 @@ app.post('/Buying',async (req, res) => {
        const amount = payMent.data.amount;
      
      let user =  await increaseTokens(gmail, amount, `Bought Tokens`);
+   
+    console.log(req.body);
     
     res.send(user);
      }else{
        console.log('Failure');
-       console.log(req.body);
+       console.log(req.body.data);
        
     res.send("Allgood");
        
      }
-   }catch(err){
+   }
+   catch(err){
     console.log(`We noticed ${err.message}`);
     res.send(`We noticed ${err.message}`);
    }
+   
 });
 
 // start server

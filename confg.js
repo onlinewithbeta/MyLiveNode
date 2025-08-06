@@ -1,6 +1,7 @@
+import 'dotenv/config'; 
 
 export const cfg = {
-    port: process.env.PORT || 3100,
+    port: process.env.PORT ,
     DB_URL: process.env.DB_URL
 };
 
