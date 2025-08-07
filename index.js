@@ -27,8 +27,6 @@ const PermiumUser = mongoose.model("PermiumUser", UserSchema);
    const Mongodb_url =cfg.DB_URL;
    
    //DB_URL
-
-
     await mongoose.connect(Mongodb_url).then(() => console.log("connected"));
 }
 
@@ -78,11 +76,12 @@ async function increaseTokens(gmail, amount, notes) {
         if ((user.tokens + amount) < 0) {
             throw new Error(`Insufficient tokens. Current balance: ${user.tokens}`);
         }
-                amount = amount/1000;
+
 
         const trans = {
+            transId: Date.now(),
             action: notes,
-            cost: amount,
+            cost: amount * 10,
             balance: user.tokens + amount,
             date: getDateOnly(),
             time: getTimeOnly()
@@ -109,19 +108,22 @@ async function increaseTokens(gmail, amount, notes) {
 app.post('/Buying',async (req, res) => {
     
    try{
+     let payDetails = req.body.data.metadata;
      let payMent = req.body;
      if(payMent.event === 'charge.success'){
-       const gmail = payMent.data.customer.email;
-       const amount = payMent.data.amount;
-     
-     let user =  await increaseTokens(gmail, amount, `Bought Tokens`);
+       const gmail = payDetails.gmail;
+       const tokens = Number(payDetails.tokens);
+       
+     let user =  await increaseTokens(gmail, tokens, `Bought Tokens`);
    
-    console.log(req.body);
-    console.log(req.body.data.metadata);
+    console.log(payDetails);
     
-    res.send(user);
+    res.send([
+      user.gmail,
+      user.tokens
+    ]);
      }else{
-       console.log('Failure');
+       console.log('Failure ProjectPQuniport@gmail.com');
        console.log(req.body.data);
        
     res.send("Allgood");
@@ -134,7 +136,6 @@ app.post('/Buying',async (req, res) => {
    }
    
 });
-
 // start server
 app.listen(cfg.port, () => {
     console.log(`Our app is listening on http://localhost:${ cfg.port }`);
