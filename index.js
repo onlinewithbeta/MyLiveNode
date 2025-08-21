@@ -78,26 +78,28 @@ async function increaseTokens(gmail, amount, notes, ref) {
         if (!user.details) user.details = { Transactions: [] };
         if (!user.details.Transactions) user.details.Transactions = [];
 
-        //Tge refered trsnsactuonlet userTransactions = user.details.Transactions;
-let thisTrans = null;
+        //Tge refered trsnsactuonlet
+        let userTransactions = user.details.Transactions;
+        let thisTrans = null;
 
-for (let i = 0; i < userTransactions.length; i++) {
-    if (userTransactions[i].transId === ref) {
-        thisTrans = userTransactions[i];
-        user.details.Transactions[i]=  {
-            transId: ref,
-            status: "successful",
+        for (let i = 0; i < userTransactions.length; i++) {
+            if (userTransactions[i].transId === ref) {
+              if(userTransactions[i].status === 'pending'){
+                thisTrans = userTransactions[i];
+                user.details.Transactions[i] = {
+                    transId: ref,
+                    status: "successful",
 
-            action: notes,
-            cost: amount * 10,
-            balance: user.tokens + amount,
-            date: getDateOnly(),
-            time: getTimeOnly()
-        };;
-        
-        break;
-    }
+                    action: notes,
+                    cost: amount * 10,
+                    balance: user.tokens + amount,
+                    date: getDateOnly(),
+                    time: getTimeOnly()
+                };
 }
+                break;
+            }
+        }
 
         user.tokens += amount;
         user.markModified("details"); // Important for mixed types
