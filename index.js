@@ -116,7 +116,7 @@ app.post('/Buying',async (req, res) => {
        
      let user =  await increaseTokens(gmail, tokens, `Bought Tokens`);
    
-    console.log(payDetails);
+    console.log(req.body);
     
     res.send([
       user.gmail,
