@@ -5,13 +5,18 @@
     "main": "index.js",
     "type": "module",
     "scripts": {
-        "start": "node index.js"
+        "dotenv": "^17.2.1",
+        "start": "node index.js",
+        "dev": "nodemon index.js"
     },
     "author": "Believe",
     "license": "ISC",
     "dependencies": {
-        "dotenv": "^17.2.1",
         "express": "^4.21.2",
         "mongoose": "^8.15.1"
+    },
+    "devDependencies": {
+        "dotenv": "^17.2.1",
+        "nodemon": "^3.1.10"
     }
 }

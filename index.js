@@ -21,6 +21,17 @@ const UserSchema = new mongoose.Schema({
 });
 const PermiumUser = mongoose.model("PermiumUser", UserSchema);
 
+const tokenBuySchema = new mongoose.Schema({
+    gmail: String,
+    dept: String,
+
+    cost: Number,
+    bal: Number,
+
+    ref: String
+});
+const tokenBought = mongoose.model("tokenBought", tokenBuySchema);
+
 //connect to database
 async function connectDB() {
     const Mongodb_url = cfg.DB_URL;
@@ -78,38 +89,63 @@ async function increaseTokens(gmail, amount, notes, ref) {
         if (!user.details) user.details = { Transactions: [] };
         if (!user.details.Transactions) user.details.Transactions = [];
 
-        //Tge refered trsnsactuonlet
+        //The user Transactions
         let userTransactions = user.details.Transactions;
-        let thisTrans = null;
+        let thisTrans = null; //This Transactions
 
+        //Go through Transactions
         for (let i = 0; i < userTransactions.length; i++) {
+            //Find the particular Transactions to Increase
             if (userTransactions[i].transId === ref) {
-              if(userTransactions[i].status === 'pending'){
-                thisTrans = userTransactions[i];
-                user.details.Transactions[i] = {
-                    transId: ref,
-                    status: "successful",
-
-                    action: notes,
-                    cost: amount * 10,
-                    balance: user.tokens + amount,
-                    date: getDateOnly(),
-                    time: getTimeOnly()
-                };
-}
+                if (userTransactions[i].status === "pending") {
+                    thisTrans = userTransactions[i];
+                    user.details.Transactions[i] = {
+                        transId: ref,
+                        status: "successful",
+                        action: notes,
+                        cost: amount * 10,
+                        balance: user.tokens + amount,
+                        date: getDateOnly(),
+                        time: getTimeOnly()
+                    };
+                }
                 break;
             }
         }
-
+        //Increase Tokens and save
         user.tokens += amount;
         user.markModified("details"); // Important for mixed types
-
         await user.save();
+
+        //Save Funding in action not very neccessary
+        try {
+            await saveFunding(
+                user.gmail,
+                user.department,
+                amount*10,
+                user.tokens,
+                ref
+            );
+        } catch (err) {
+            console.log(`Failed to save ${err.message}`);
+        }
         return user;
     } catch (error) {
         console.error(`Error in deductTokens for ${gmail}:`, error);
         throw error;
     }
+}
+//save Funding in action
+async function saveFunding(gmail, department, cost, tokens, ref) {
+    let fundAction = new tokenBought({
+        gmail: gmail,
+        dept: department,
+        cost: cost,
+        bal: tokens,
+        ref: ref
+    });
+    await fundAction.save();
+    
 }
 
 app.post("/Buying", async (req, res) => {
@@ -120,8 +156,9 @@ app.post("/Buying", async (req, res) => {
         let payMent = req.body;
         console.log("Startibg");
         if (payMent.event === "charge.success") {
-            console.log("charge.success");
+            //if a Transactions is successful
             if (!payDetails) res.send("ok");
+            //if a Transactions is from ppq
 
             const gmail = payDetails.gmail;
             let ref = payMent.data.reference;
@@ -138,11 +175,8 @@ app.post("/Buying", async (req, res) => {
 
             res.send([user.gmail, user.tokens]);
 
-            console.log("savesmd");
         } else {
-            console.log("Startibg");
-            console.log("Failure ProjectPQuniport@gmail.com");
-
+         //was not a successful Transactions
             console.log(req.body.data);
 
             res.send("Allgood");
