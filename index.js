@@ -92,43 +92,50 @@ async function increaseTokens(gmail, amount, notes, ref) {
         //The user Transactions
         let userTransactions = user.details.Transactions;
         let thisTrans = null; //This Transactions
-
+        let thisTransIndex = "none";
         //Go through Transactions
         for (let i = 0; i < userTransactions.length; i++) {
             //Find the particular Transactions to Increase
-            if (userTransactions[i].transId === ref) {
-                if (userTransactions[i].status === "pending") {
-                    thisTrans = userTransactions[i];
-                    user.details.Transactions[i] = {
-                        transId: ref,
-                        status: "successful",
-                        action: notes,
-                        cost: amount * 10,
-                        balance: user.tokens + amount,
-                        date: getDateOnly(),
-                        time: getTimeOnly()
-                    };
+            let currentTrans = userTransactions[i];
+            if (currentTrans.transId === ref) {
+                if (currentTrans.status === "pending") {
+                    console.log(currentTrans);
+                    thisTrans = currentTrans;
+                    thisTransIndex = i;
+                    break;
                 }
-                break;
             }
         }
-        //Increase Tokens and save
-        user.tokens += amount;
-        user.markModified("details"); // Important for mixed types
-        await user.save();
+        if (thisTrans && thisTransIndex !== "none") {
+            user.details.Transactions[thisTransIndex] = {
+                transId: ref,
+                status: "successful",
+                action: notes,
+                cost: amount * 10,
+                balance: user.tokens + amount,
+                date: getDateOnly(),
+                time: getTimeOnly()
+            };
 
-        //Save Funding in action not very neccessary
-        try {
-            await saveFunding(
-                user.gmail,
-                user.department,
-                amount*10,
-                user.tokens,
-                ref
-            );
-        } catch (err) {
-            console.log(`Failed to save ${err.message}`);
+            //Increase Tokens and save
+            user.tokens += amount;
+            user.markModified("details"); // Important for mixed types
+            await user.save();
+
+            //Save Funding in action not very neccessary
+            try {
+                await saveFunding(
+                    user.gmail,
+                    user.department,
+                    amount * 10,
+                    user.tokens,
+                    ref
+                );
+            } catch (err) {
+                console.log(`Failed to save ${err.message}`);
+            }
         }
+
         return user;
     } catch (error) {
         console.error(`Error in deductTokens for ${gmail}:`, error);
@@ -145,7 +152,6 @@ async function saveFunding(gmail, department, cost, tokens, ref) {
         ref: ref
     });
     await fundAction.save();
-    
 }
 
 app.post("/Buying", async (req, res) => {
@@ -174,9 +180,8 @@ app.post("/Buying", async (req, res) => {
             );
 
             res.send([user.gmail, user.tokens]);
-
         } else {
-         //was not a successful Transactions
+            //was not a successful Transactions
             console.log(req.body.data);
 
             res.send("Allgood");
